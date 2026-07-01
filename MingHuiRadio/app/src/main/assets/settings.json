@@ -1,0 +1,14 @@
+[
+    {
+      "webSiteName": "明慧广播源",
+      "webSiteUrl": "https://www.mhradio.org",
+      "musicUrlHead": "https://www.mhradio.org",
+      "musicUrlFormat": "https://www.mhradio.org/showcategory/%s/%s.html"
+    },
+    {
+      "webSiteName": "希望之声源",
+      "webSiteUrl": "https://mp3.soundofhope.org/mhradio/",
+      "musicUrlHead": "https://mp3.soundofhope.org",
+      "musicUrlFormat": "https://mp3.soundofhope.org/mhradio/%s/%s.html"
+    }
+]

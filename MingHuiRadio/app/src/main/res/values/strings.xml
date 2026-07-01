@@ -1,0 +1,55 @@
+<resources>
+    <string name="app_name_cn">明慧广播</string>
+    <string name="version_name" translatable="false">V1.0.20260701</string>
+    <string name="app_message">明慧广播 V1.0.20260701</string>
+
+    <string name="dialog_result_ok">确定</string>
+    <string name="dialog_result_cancel">取消</string>
+    <string name="dialog_tip">提示</string>
+    <string name="dialog_about">关于</string>
+    <string name="dialog_button_clean_all_history">清空所有</string>
+    <string name="dialog_button_clean_selected_history">清空所选</string>
+    <string name="dialog_button_i_know">我知道了</string>
+    <string name="quit_the_app_after_pressing_back_key_once_again">再按一次返回键退出程序！</string>
+
+    <string name="tips_error">错误</string>
+    <string name="parameters_error">参数错误</string>
+
+    <string name="action_vpn_freegate_8590">自由门VPN（端口：8590）</string>
+    <string name="action_vpn_wujie_19966">无界一点通（端口：19966）</string>
+
+    <string name="permission_request">"给予通知权限，可方便您查看节目播放消息。请按“确认”按钮，并在系统权限询问窗口授予。"</string>
+    <string name="permission_request_in_app_settings">"给予通知权限，可方便您查看节目播放消息。请按“前往设置”按钮，并在系统的程序设置窗口授予。"</string>
+    <string name="category_record_error">分类记录出错...</string>
+    <string name="failed_to_retrieve_data">获取数据失败！</string>
+    <string name="failed_to_retrieve_category_info">获取当前分类页面信息失败！</string>
+    <string name="select_radio_program_page">请选择要收听的广播页面</string>
+    <string name="select_program_resource">选择音源</string>
+    <string name="select_program_page">选择页面</string>
+    <string name="try_again">再次尝试</string>
+    <string name="select_program_category">选择分类</string>
+    <string name="select_program_section">选择栏目</string>
+    <string name="go_to_settings">前往设置</string>
+    <string name="do_not_remind_again">不再提醒</string>
+    <string name="permission_requirement">权限需求</string>
+    <string name="item_pub_date">日期：</string>
+    <string name="item_duration">时长：</string>
+    <string name="delete_favorite">删除收藏</string>
+    <string name="confirm_deleting_all_favorites">确认清空所有收藏？</string>
+    <string name="dialog_result_ask">询问</string>
+    <string name="not_found_favorite_list">没有找到收藏列表！</string>
+    <string name="clear_all_favorites">清空所有收藏</string>
+    <string name="return_last_screen">返回</string>
+    <string name="loading_data">正在加载...</string>
+    <string name="playing_error_with_param">播放出错：%1$s</string>
+    <string name="failed_to_connect_media_controller">连接媒体控制器失败了！\n详情：%1$s</string>
+    <string name="connecting_media_controller">正在连接媒体控制器...</string>
+    <string name="playing_animation">播放动画</string>
+    <string name="searching_program">搜索</string>
+    <string name="failed_to_retrieve_play_list">错误：获取播放列表失败！</string>
+    <string name="favorite_screen">收藏页面</string>
+    <string name="proxy_setting">代理设置</string>
+    <string name="failed_to_retrieve_categories_for_a_website">获取%1$s分类失败，原因：%2$s</string>
+    <string name="failed_to_retrieve_data_for_data_format_error">获取数据失败！可能后台数据格式发生变化！</string>
+
+</resources>

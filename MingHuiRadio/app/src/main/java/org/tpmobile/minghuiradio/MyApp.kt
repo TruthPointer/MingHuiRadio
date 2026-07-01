@@ -1,0 +1,80 @@
+package org.tpmobile.minghuiradio
+
+import android.app.Application
+import android.content.Context
+import android.content.res.Configuration
+import org.tpmobile.minghuiradio.util.Logger
+import org.tpmobile.minghuiradio.util.PREF_PROXY_PORT
+import org.tpmobile.minghuiradio.util.PROXY_PORT_FREEGATE
+import org.tpmobile.minghuiradio.util.PROXY_PORT_HOST
+import org.tpmobile.minghuiradio.util.ktx.getPref
+import org.tpmobile.minghuiradio.util.ktx.setPref
+import java.net.InetSocketAddress
+import java.net.Proxy
+
+class MyApp : Application() {
+
+  companion object {
+    lateinit var appContext: Context
+
+    @JvmField
+    var USE_PROXY = true
+    var proxyHost: String = PROXY_PORT_HOST//19966 //20210917 由自由門的代理改為使用無界一點通的代理
+    var proxyPort: Int = PROXY_PORT_FREEGATE
+
+    @JvmField
+    var proxy: Proxy = Proxy(
+      Proxy.Type.HTTP,
+      InetSocketAddress(proxyHost, proxyPort)
+    )
+
+    fun setProxy(port: Int) {
+      if (port == proxyPort) return
+      Logger.i("setProxy: $port.....")
+
+      setPref(PREF_PROXY_PORT, port)
+      proxyPort = port
+      //1.
+      System.getProperties().apply {
+        setProperty("http.proxyHost", proxyHost) //http.proxyHost
+        setProperty("http.proxyPort", proxyPort.toString()) //http.proxyPort
+        setProperty("https.proxyHost", proxyHost) //http.proxyHost
+        setProperty("https.proxyPort", proxyPort.toString()) //http.proxyPort
+      }
+      //2.
+      proxy = Proxy(
+        Proxy.Type.HTTP,
+        InetSocketAddress(proxyHost, proxyPort)
+      )
+    }
+  }
+
+  override fun onCreate() {
+    super.onCreate()
+    appContext = applicationContext
+    initProxy()
+  }
+
+  override fun onConfigurationChanged(newConfig: Configuration) {
+    super.onConfigurationChanged(newConfig)
+  }
+
+  ///////////////////////////////////////////////////
+  private fun initProxy() {
+    proxyPort = getPref(PREF_PROXY_PORT, PROXY_PORT_FREEGATE)
+    if (!USE_PROXY) return
+    //1.
+    System.getProperties().apply {
+      setProperty("http.proxyHost", proxyHost) //http.proxyHost
+      setProperty("http.proxyPort", proxyPort.toString()) //http.proxyPort
+      setProperty("https.proxyHost", proxyHost) //http.proxyHost
+      setProperty("https.proxyPort", proxyPort.toString()) //http.proxyPort
+    }
+    //2.
+    proxy = Proxy(
+      Proxy.Type.HTTP,
+      InetSocketAddress(proxyHost, proxyPort)
+    )
+  }
+
+}
