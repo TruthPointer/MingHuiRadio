@@ -113,19 +113,19 @@ fun MusicScreen(
     override fun onPlaybackStateChanged(playbackState: Int) {
       super.onPlaybackStateChanged(playbackState)
       Logger.i(TAG, "onPlaybackStateChanged: $playbackState, ${currentMp3Url.value}")
-      if(currentMp3Url.value.isEmpty()) return
+      if (currentMp3Url.value.isEmpty()) return
       if (playbackState == Player.STATE_ENDED) {
-        viewModel.updateMusicItemSelection(currentMp3Url.value, false)
+        viewModel.updateMusicItemPlayState(currentMp3Url.value, false)
       } else if (playbackState == Player.STATE_READY) {
-        viewModel.updateMusicItemSelection(currentMp3Url.value, true)
+        viewModel.updateMusicItemPlayState(currentMp3Url.value, true)
       }
     }
 
     override fun onIsPlayingChanged(isPlaying: Boolean) {
       super.onIsPlayingChanged(isPlaying)
       Logger.i(TAG, "onIsPlayingChanged: $isPlaying, ${currentMp3Url.value}")
-      if(currentMp3Url.value.isEmpty()) return
-      viewModel.updateMusicItemSelection(currentMp3Url.value, isPlaying)
+      if (currentMp3Url.value.isEmpty()) return
+      viewModel.updateMusicItemPlayState(currentMp3Url.value, isPlaying)
     }
   }
 
@@ -134,7 +134,7 @@ fun MusicScreen(
     onStopOrDispose {
       Logger.i(TAG, "LifecycleStartEffect => onStopOrDispose...")
       //showExoplayer = false
-      //viewModel.clearAllMusicItemSelectionState()
+      //viewModel.clearAllMusicItemPlayState()
       mediaController.removeListener(listener)
       //mediaController.stop()
       //mediaController.setMediaItems(emptyList())
@@ -384,7 +384,7 @@ fun MusicScreen(
                   viewModel,
                   onClick = { isPlaying ->
                     if (currentMp3Url.value.isNotEmpty()) {
-                      viewModel.updateMusicItemSelection(currentMp3Url.value, isPlaying)
+                      viewModel.updateMusicItemPlayState(currentMp3Url.value, isPlaying)
                     }
                   }
                 )
@@ -449,7 +449,7 @@ fun MusicList(
 ) {
   Logger.i(
     "MusicScreen",
-    "已经被选择的：" + list.filter { it.isSelected }.joinToString("\r\n") { it.title })
+    "已经被选择的：" + list.filter { it.isPlaying }.joinToString("\r\n") { it.title })
   LazyColumn(
     modifier = modifier,//.wrapContentHeight(),//Modifier.padding(top = paddingTop),
     contentPadding = PaddingValues(horizontal = 8.dp, vertical = 8.dp)
@@ -461,17 +461,17 @@ fun MusicList(
           .fillMaxWidth()
           .padding(horizontal = 8.dp, vertical = 16.dp)
           .clickable(onClick = {
-            val clickIt = !item.isSelected
-            viewModel.clearAllMusicItemSelectionState()
+            val clickIt = !item.isPlaying
+            viewModel.clearAllMusicItemPlayState()
             if (clickIt)
-              viewModel.updateMusicItemSelection(item.url, true)
+              viewModel.updateMusicItemPlayState(item.url, true)
             viewModel.getAllMusicItems()
             onClick(index)
           }),
         horizontalArrangement = Arrangement.Center,
         verticalAlignment = Alignment.CenterVertically
       ) {
-        AnimatedVectorDrawable(item.isSelected)
+        AnimatedVectorDrawable(item.isPlaying)
         Column(Modifier.wrapContentHeight()) {
           Row(
             Modifier.fillMaxWidth(),
@@ -491,9 +491,9 @@ fun MusicList(
             )
             Row() {
               IconButton(onClick = {
-                val selection = !item.isFavorite
-                viewModel.updateMusicItemFavorite(item.url, selection)
-                if (selection) {
+                val favorite = !item.isFavorite
+                viewModel.updateMusicItemFavorite(item.url, favorite)
+                if (favorite) {
                   viewModel.insertFavoriteItem(item.toFavoriteItem())
                   //Icons.Default.Favorite
                 } else {

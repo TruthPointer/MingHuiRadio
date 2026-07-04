@@ -6,7 +6,7 @@ import androidx.room.RoomDatabase
 import org.tpmobile.minghuiradio.MyApp
 import org.tpmobile.minghuiradio.data.FavoriteItem
 
-@Database(entities = [FavoriteItem::class], version = 1, exportSchema = false)
+@Database(entities = [FavoriteItem::class], version = 2, exportSchema = false)
 abstract class FavoriteDb : RoomDatabase() {
   companion object {
     private const val DATABASE_NAME = "favorite_item.db"

@@ -99,9 +99,9 @@ fun FavoriteScreen(
       Logger.i(TAG, "onPlaybackStateChanged: $playbackState, ${currentMp3Url.value}")
       if(currentMp3Url.value.isEmpty()) return
       if (playbackState == Player.STATE_ENDED) {
-        viewModel.updateFavoriteItemSelection(currentMp3Url.value, false)
+        viewModel.updateFavoriteItemPlayState(currentMp3Url.value, false)
       } else if (playbackState == Player.STATE_READY) {
-        viewModel.updateFavoriteItemSelection(currentMp3Url.value, true)
+        viewModel.updateFavoriteItemPlayState(currentMp3Url.value, true)
       }
     }
 
@@ -109,7 +109,7 @@ fun FavoriteScreen(
       super.onIsPlayingChanged(isPlaying)
       Logger.i(TAG, "onIsPlayingChanged: $isPlaying, ${currentMp3Url.value}")
       if(currentMp3Url.value.isEmpty()) return
-      viewModel.updateFavoriteItemSelection(currentMp3Url.value, isPlaying)
+      viewModel.updateFavoriteItemPlayState(currentMp3Url.value, isPlaying)
     }
   }
   mediaController.addListener(listener)
@@ -126,7 +126,7 @@ fun FavoriteScreen(
     coroutineScope.launch {
       if (showExoplayer) {
         showExoplayer = false
-        viewModel.clearAllFavoriteItemSelectionState()
+        viewModel.clearAllFavoriteItemPlayState()
         mediaController.stop()
         mediaController.setMediaItems(emptyList())
       }
@@ -195,7 +195,7 @@ fun FavoriteScreen(
                 IconButton(onClick = {
                   if (showExoplayer) {
                     showExoplayer = false
-                    viewModel.clearAllFavoriteItemSelectionState()
+                    viewModel.clearAllFavoriteItemPlayState()
                     mediaController.stop()
                     mediaController.setMediaItems(emptyList())
                   }
@@ -273,13 +273,14 @@ fun FavoriteScreen(
                   viewModel,
                   onDelete = { itemDeleted ->
                     //1、检查当前播放状态，相同时停止播放等
-                    if (favoriteItems[itemDeleted].isSelected) {
+                    if (favoriteItems[itemDeleted].isPlaying) {
                       showExoplayer = false
                       mediaController.stop()
                       mediaController.setMediaItems(emptyList())
                     }
                     //2.
                     viewModel.deleteFavoriteItem(favoriteItems[itemDeleted])
+                    viewModel.updateMusicItemFavorite(favoriteItems[itemDeleted].url, false)
                   }
                 )
               }
@@ -302,7 +303,7 @@ fun FavoriteScreen(
                   viewModel,
                   onClick = { isPlaying ->
                     if (currentMp3Url.value.isNotEmpty()) {
-                      viewModel.updateFavoriteItemSelection(currentMp3Url.value, isPlaying)
+                      viewModel.updateFavoriteItemPlayState(currentMp3Url.value, isPlaying)
                     }
                   }
                 )
@@ -359,17 +360,17 @@ fun FavoriteList(
           .fillMaxWidth()
           .padding(horizontal = 8.dp, vertical = 16.dp)
           .clickable(onClick = {
-            val clickIt = !item.isSelected
-            viewModel.clearAllFavoriteItemSelectionState()
+            val clickIt = !item.isPlaying
+            viewModel.clearAllFavoriteItemPlayState()
             if (clickIt)
-              viewModel.updateFavoriteItemSelection(item.url, true)
+              viewModel.updateFavoriteItemPlayState(item.url, true)
             viewModel.getAllFavoriteItems()
             onClick(index)
           }),
         horizontalArrangement = Arrangement.Center,
         verticalAlignment = Alignment.CenterVertically
       ) {
-        AnimatedVectorDrawable(item.isSelected)
+        AnimatedVectorDrawable(item.isPlaying)
         Column(Modifier.wrapContentHeight()) {
           Row(
             Modifier.fillMaxWidth(),

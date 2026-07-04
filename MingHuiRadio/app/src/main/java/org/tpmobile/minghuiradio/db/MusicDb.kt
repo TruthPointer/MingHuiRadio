@@ -6,7 +6,7 @@ import androidx.room.RoomDatabase
 import org.tpmobile.minghuiradio.MyApp
 import org.tpmobile.minghuiradio.data.MusicItem
 
-@Database(entities = [MusicItem::class], version = 1, exportSchema = false)
+@Database(entities = [MusicItem::class], version = 2, exportSchema = false)
 abstract class MusicDb : RoomDatabase() {
   companion object {
     private const val DATABASE_NAME = "music_item.db"

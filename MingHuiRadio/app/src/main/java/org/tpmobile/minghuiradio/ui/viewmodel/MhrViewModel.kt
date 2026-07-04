@@ -1,6 +1,5 @@
 package org.tpmobile.minghuiradio.ui.viewmodel
 
-import androidx.compose.ui.res.stringResource
 import androidx.media3.session.MediaController
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -256,15 +255,16 @@ class MhrViewModel() : CoroutineViewModel() {
   fun getAllMusicItems(): Job {
     return launch(Dispatchers.IO) {
       repository.getAllMusicItems().collectLatest { list ->
-        val selectedOption = categorySelectionInfo?.selectedOptions() ?: resIdToRealString(R.string.category_record_error)
+        val selectedOption = categorySelectionInfo?.selectedOptions()
+          ?: resIdToRealString(R.string.category_record_error)
         setMusicScreenUiState(UiStateWithProgress.Data(Pair(selectedOption, list)))
       }
     }
   }
 
-  fun updateMusicItemSelection(url: String, isSelected: Boolean): Job {
+  fun updateMusicItemPlayState(url: String, isPlaying: Boolean): Job {
     return launch(Dispatchers.IO) {
-      repository.updateMusicItemSelection(url, isSelected)
+      repository.updateMusicItemPlayState(url, isPlaying)
     }
   }
 
@@ -274,9 +274,9 @@ class MhrViewModel() : CoroutineViewModel() {
     }
   }
 
-  fun clearAllMusicItemSelectionState(): Job {
+  fun clearAllMusicItemPlayState(): Job {
     return launch(Dispatchers.IO) {
-      repository.clearAllMusicItemSelectionState()
+      repository.clearAllMusicItemPlayState()
     }
   }
 
@@ -311,15 +311,15 @@ class MhrViewModel() : CoroutineViewModel() {
     }
   }
 
-  fun updateFavoriteItemSelection(url: String, isSelected: Boolean): Job {
+  fun updateFavoriteItemPlayState(url: String, isPlaying: Boolean): Job {
     return launch(Dispatchers.IO) {
-      repository.updateFavoriteItemSelection(url, isSelected)
+      repository.updateFavoriteItemPlayState(url, isPlaying)
     }
   }
 
-  fun clearAllFavoriteItemSelectionState(): Job {
+  fun clearAllFavoriteItemPlayState(): Job {
     return launch(Dispatchers.IO) {
-      repository.clearAllFavoriteItemSelectionState()
+      repository.clearAllFavoriteItemPlayState()
     }
   }
 

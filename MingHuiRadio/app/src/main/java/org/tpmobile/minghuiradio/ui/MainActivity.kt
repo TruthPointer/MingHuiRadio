@@ -117,9 +117,9 @@ class MainActivity : ComponentActivity() {
             toast(R.string.quit_the_app_after_pressing_back_key_once_again)
             exitTime = System.currentTimeMillis()
           } else {
-            mhrViewModel.clearAllMusicItemSelectionState()
-            mhrViewModel.clearAllFavoriteItemSelectionState()
-            if(::mediaController.isInitialized){
+            mhrViewModel.clearAllMusicItemPlayState()
+            mhrViewModel.clearAllFavoriteItemPlayState()
+            if (::mediaController.isInitialized) {
               mediaController.stop()
               mediaController.setMediaItems(emptyList())
             }

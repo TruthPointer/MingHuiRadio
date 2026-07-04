@@ -31,9 +31,9 @@ interface FavoriteDao {
   @Query("UPDATE favorite_item SET downloadPercent=:percent WHERE url =:url")
   suspend fun updateDownloadPercent(url: String, percent: Int)
 
-  @Query("UPDATE favorite_item SET isSelected=:isSelected WHERE url =:url")
-  suspend fun updateSelection(url: String, isSelected: Boolean)
+  @Query("UPDATE favorite_item SET isPlaying=:isPlaying WHERE url =:url")
+  suspend fun updatePlayState(url: String, isPlaying: Boolean)
 
-  @Query("UPDATE favorite_item SET isSelected = 0")
-  suspend fun clearAllSelectionState()
+  @Query("UPDATE favorite_item SET isPlaying = 0")
+  suspend fun clearAllPlayState()
 }

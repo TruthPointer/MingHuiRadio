@@ -20,7 +20,7 @@ data class FavoriteItem(
   /**
    * 表示：被选择，处于播放状态
    */
-  var isSelected: Boolean = false,
+  var isPlaying: Boolean = false,
   //下载暂停的位置
   var downloadPercent: Int = 0,
   //播放暂停的位置

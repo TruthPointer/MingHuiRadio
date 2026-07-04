@@ -84,16 +84,16 @@ class RadioRepository(
     musicDb.musicDao().insertAll(musicItems)
   }
 
-  suspend fun updateMusicItemSelection(url: String, isSelected: Boolean) {
-    musicDb.musicDao().updateSelection(url, isSelected)
+  suspend fun updateMusicItemPlayState(url: String, isPlaying: Boolean) {
+    musicDb.musicDao().updatePlayState(url, isPlaying)
   }
 
   suspend fun updateMusicItemFavorite(url: String, isFavorite: Boolean) {
-    musicDb.musicDao().updateFavorite(url, isFavorite)
+    musicDb.musicDao().updateFavoriteState(url, isFavorite)
   }
 
-  suspend fun clearAllMusicItemSelectionState() {
-    musicDb.musicDao().clearAllSelectionState()
+  suspend fun clearAllMusicItemPlayState() {
+    musicDb.musicDao().clearAllPlayState()
   }
 
   ////////////////////////////////////
@@ -119,12 +119,12 @@ class RadioRepository(
     favoriteDb.favoriteDao().deleteAll()
   }
 
-  suspend fun updateFavoriteItemSelection(url: String, isSelected: Boolean) {
-    favoriteDb.favoriteDao().updateSelection(url, isSelected)
+  suspend fun updateFavoriteItemPlayState(url: String, isPlaying: Boolean) {
+    favoriteDb.favoriteDao().updatePlayState(url, isPlaying)
   }
 
-  suspend fun clearAllFavoriteItemSelectionState() {
-    favoriteDb.favoriteDao().clearAllSelectionState()
+  suspend fun clearAllFavoriteItemPlayState() {
+    favoriteDb.favoriteDao().clearAllPlayState()
   }
 
 }
