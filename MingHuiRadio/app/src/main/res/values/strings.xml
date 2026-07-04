@@ -1,7 +1,7 @@
 <resources>
     <string name="app_name_cn">明慧广播</string>
-    <string name="version_name" translatable="false">V1.0.20260701</string>
-    <string name="app_message">明慧广播 V1.0.20260701</string>
+    <string name="version_name" translatable="false">V1.0.20260704</string>
+    <string name="app_message">明慧广播 V1.0.20260704</string>
 
     <string name="dialog_result_ok">确定</string>
     <string name="dialog_result_cancel">取消</string>
