@@ -4,6 +4,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.withContext
 import org.tpmobile.minghuiradio.data.FavoriteItem
 import org.tpmobile.minghuiradio.data.MusicItem
@@ -116,6 +117,10 @@ class RadioRepository(
   }
 
   suspend fun clearAllFavoriteItems() = withContext(Dispatchers.IO) {
+    favoriteDb.favoriteDao().getAllItems().map { it.url }.forEach {
+      musicDb.musicDao().updateFavoriteState(it, false)
+      musicDb.musicDao().updatePlayState(it, false)
+    }
     favoriteDb.favoriteDao().deleteAll()
   }
 
