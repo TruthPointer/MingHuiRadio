@@ -3,6 +3,9 @@ package org.tpmobile.minghuiradio.ui
 import android.Manifest
 import android.os.Build
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.graphics.res.animatedVectorResource
+import androidx.compose.animation.graphics.res.rememberAnimatedVectorPainter
+import androidx.compose.animation.graphics.vector.AnimatedImageVector
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -57,8 +60,11 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.RectangleShape
+import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -71,6 +77,13 @@ import androidx.lifecycle.compose.LifecycleStartEffect
 import androidx.media3.common.Player
 import androidx.media3.session.MediaController
 import androidx.navigation.NavController
+import com.airbnb.lottie.LottieProperty
+import com.airbnb.lottie.compose.LottieCompositionSpec
+import com.airbnb.lottie.compose.rememberLottieComposition
+import com.airbnb.lottie.compose.rememberLottieDynamicProperties
+import com.airbnb.lottie.compose.rememberLottieDynamicProperty
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import org.tpmobile.minghuiradio.BuildConfig.MY_DEBUG
 import org.tpmobile.minghuiradio.MyApp
 import org.tpmobile.minghuiradio.R
@@ -81,6 +94,7 @@ import org.tpmobile.minghuiradio.ui.ScreenRoute.ROUTE_FAVORITE_PAGE
 import org.tpmobile.minghuiradio.ui.viewmodel.MhrViewModel
 import org.tpmobile.minghuiradio.ui.widget.CardDialog
 import org.tpmobile.minghuiradio.ui.widget.CategorySelectionDialog
+import org.tpmobile.minghuiradio.ui.widget.LottieMusicAnimation
 import org.tpmobile.minghuiradio.ui.widget.PermissionSelection
 import org.tpmobile.minghuiradio.util.Logger
 
@@ -105,6 +119,7 @@ fun MusicScreen(
   var showCategorySelectionDialog by remember { mutableStateOf(false) }
   var expandProxySelectionMenu by remember { mutableStateOf(false) }
 
+  //val showExoplayer = rememberSaveable { mutableStateOf(false) }
   val categorySelected = rememberSaveable { mutableStateOf("") }
   val loadingInner = rememberSaveable { mutableStateOf(false) }
   val currentMp3Url = rememberSaveable { mutableStateOf("") }
@@ -114,7 +129,8 @@ fun MusicScreen(
       super.onPlaybackStateChanged(playbackState)
       Logger.i(TAG, "onPlaybackStateChanged: $playbackState, ${currentMp3Url.value}")
       if (currentMp3Url.value.isEmpty()) return
-      if (playbackState == Player.STATE_ENDED) {
+      //IDLE: 1, BUFFERING: 2, READY: 3, ENDED: 4
+      if (playbackState == Player.STATE_ENDED || playbackState == Player.STATE_IDLE) {
         viewModel.updateMusicItemPlayState(currentMp3Url.value, false)
       } else if (playbackState == Player.STATE_READY) {
         viewModel.updateMusicItemPlayState(currentMp3Url.value, true)
@@ -128,9 +144,10 @@ fun MusicScreen(
       viewModel.updateMusicItemPlayState(currentMp3Url.value, isPlaying)
     }
   }
+  mediaController.addListener(listener)//20260713
 
   LifecycleStartEffect(Unit) {
-    mediaController.addListener(listener)
+    //mediaController.addListener(listener)
     onStopOrDispose {
       Logger.i(TAG, "LifecycleStartEffect => onStopOrDispose...")
       //showExoplayer = false
@@ -230,7 +247,9 @@ fun MusicScreen(
           (musicScreenUiState as UiStateWithProgress.Data<Pair<String, List<MusicItem>>>).data
         val musicItems = data.second
         categorySelected.value = data.first
-        //val mediaItems = musicItems.map { it.toMediaItem() }
+        Logger.i(
+          "MusicScreen",
+          "[h]已经被选择的：" + musicItems.filter { it.isPlaying }.joinToString("\r\n") { it.title })
         Scaffold(
           modifier = Modifier.fillMaxSize(),
           topBar = {
@@ -241,9 +260,22 @@ fun MusicScreen(
               },
               actions = {
                 IconButton(onClick = {
-                  /*mediaController.stop()
-                  showExoplayer = false*/
+                  /*coroutineScope.launch {
+                    //20260713
+                    mediaController.stop()
+                    showExoplayer = false
+                    viewModel.clearAllMusicItemPlayState()
+                    delay(100)
+                    //
+                    navController.navigate(ROUTE_FAVORITE_PAGE)
+                  }*/
+                  //20260713
+                  currentMp3Url.value = ""
+                  mediaController.stop()
+                  showExoplayer = false
+                  viewModel.clearAllMusicItemPlayState()
                   navController.navigate(ROUTE_FAVORITE_PAGE)
+
                 }) { Icon(Icons.Outlined.FavoriteBorder, stringResource(R.string.favorite_screen)) }
                 IconButton(onClick = {
                   expandProxySelectionMenu = true
@@ -405,6 +437,7 @@ fun MusicScreen(
                   mediaController.setMediaItems(emptyList())*/
 
                   //viewModel.setCategoryOptionsState(info.selectedOptions())
+                  currentMp3Url.value = ""
                   categorySelected.value = info.selectedOptions()
                   viewModel.fetchMusicList(info)
                 }
@@ -450,12 +483,22 @@ fun MusicList(
   Logger.i(
     "MusicScreen",
     "已经被选择的：" + list.filter { it.isPlaying }.joinToString("\r\n") { it.title })
+  val composition by rememberLottieComposition(LottieCompositionSpec.RawRes(R.raw.audio_wave_animated))
+  val dynamicProperties =  rememberLottieDynamicProperties(
+    rememberLottieDynamicProperty(
+      property = LottieProperty.COLOR,
+      value = MaterialTheme.colorScheme.secondary.toArgb(),//Color.Red.toArgb(),
+      keyPath = arrayOf("**","Fill"),
+    ),
+  )
   LazyColumn(
     modifier = modifier,//.wrapContentHeight(),//Modifier.padding(top = paddingTop),
     contentPadding = PaddingValues(horizontal = 8.dp, vertical = 8.dp)
   ) {
     itemsIndexed(items = list) { index, item ->
-      //var favoriteIconId by remember { mutableStateOf(Icons.Default.FavoriteBorder) }
+      Logger.i(
+        "MusicScreen",
+        "当前 [$index]： ${item.index} - ${item.title} - ${item.isPlaying} - ${item.isFavorite}")
       Row(
         modifier = Modifier
           .fillMaxWidth()
@@ -471,7 +514,7 @@ fun MusicList(
         horizontalArrangement = Arrangement.Center,
         verticalAlignment = Alignment.CenterVertically
       ) {
-        AnimatedVectorDrawable(item.isPlaying)
+        LottieMusicAnimation(index, item.isPlaying, composition, dynamicProperties)
         Column(Modifier.wrapContentHeight()) {
           Row(
             Modifier.fillMaxWidth(),

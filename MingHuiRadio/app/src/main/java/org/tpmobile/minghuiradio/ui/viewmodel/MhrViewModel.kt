@@ -184,6 +184,7 @@ class MhrViewModel() : CoroutineViewModel() {
               categorySelection.webSiteCategory.programUrls.mapIndexed { index, url ->
                 UrlIndexed(index, url)
               }
+            Logger.i(TAG, "urlIndexedList: ${urlIndexedList.joinToString("\r\n") { "${it.index}-${it.url}" }}")
             ParseHelper.fetchMusicItemsOfMainSectionForMHR(
               categorySelection.webSiteInfo, categorySelection.webSiteCategory, urlIndexedList,
               onProgress = { progress ->

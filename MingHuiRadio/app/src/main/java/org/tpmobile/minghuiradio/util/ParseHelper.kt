@@ -167,7 +167,7 @@ object ParseHelper {
   ): Result<Pair<List<MusicItem>, List<UrlIndexed>>> = withContext(Dispatchers.IO) {
     Logger.i(
       TAG,
-      "fetchMusicItemsOfMainSectionForMHR: urls = ${urlIndexedList.joinToString("\r\n") { it.url }}"
+      "fetchMusicItemsOfMainSectionForMHR: urls = ${urlIndexedList.joinToString("\r\n") { "${it.index}-${it.url}" }}"
     )
     try {
       //1

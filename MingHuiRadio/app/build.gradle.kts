@@ -105,6 +105,8 @@ dependencies {
   implementation(libs.kotlinx.coroutines.guava)
 
   implementation(libs.accompanist.permissions)
+
+  implementation(libs.lottie.compose)
 }
 
 fun getVersionNameFromResources(): String {

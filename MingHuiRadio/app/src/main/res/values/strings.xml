@@ -1,7 +1,7 @@
 <resources>
     <string name="app_name_cn">明慧广播</string>
-    <string name="version_name" translatable="false">V1.0.20260704</string>
-    <string name="app_message">明慧广播 V1.0.20260704</string>
+    <string name="version_name" translatable="false">V1.1.20260718</string>
+    <string name="app_message">明慧广播 V1.1.20260718</string>
 
     <string name="dialog_result_ok">确定</string>
     <string name="dialog_result_cancel">取消</string>
@@ -37,7 +37,7 @@
     <string name="delete_favorite">删除收藏</string>
     <string name="confirm_deleting_all_favorites">确认清空所有收藏？</string>
     <string name="dialog_result_ask">询问</string>
-    <string name="not_found_favorite_list">没有找到收藏列表！</string>
+    <string name="not_found_favorite_list">收藏列表为空！</string>
     <string name="clear_all_favorites">清空所有收藏</string>
     <string name="return_last_screen">返回</string>
     <string name="loading_data">正在加载...</string>

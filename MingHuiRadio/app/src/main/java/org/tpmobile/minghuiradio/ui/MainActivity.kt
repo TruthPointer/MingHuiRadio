@@ -29,8 +29,13 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.ColorFilter
@@ -38,6 +43,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.compose.LifecycleStartEffect
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.media3.common.PlaybackException
@@ -265,15 +271,3 @@ fun MhrApp(viewModel: MhrViewModel) {
   }
 }
 
-//////////////////////////////////////
-@Composable
-fun AnimatedVectorDrawable(atEnd: Boolean) {
-  val image = AnimatedImageVector.animatedVectorResource(R.drawable.audio_wave_animated)
-  Image(
-    painter = rememberAnimatedVectorPainter(image, atEnd),
-    contentDescription = stringResource(R.string.playing_animation),
-    modifier = Modifier.size(48.dp),
-    contentScale = ContentScale.Fit,// .Crop
-    colorFilter = ColorFilter.tint(color = MaterialTheme.colorScheme.secondary)
-  )
-}

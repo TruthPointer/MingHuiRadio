@@ -51,6 +51,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.RectangleShape
+import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -61,12 +62,18 @@ import androidx.lifecycle.compose.LifecycleStartEffect
 import androidx.media3.common.Player
 import androidx.media3.session.MediaController
 import androidx.navigation.NavController
+import com.airbnb.lottie.LottieProperty
+import com.airbnb.lottie.compose.LottieCompositionSpec
+import com.airbnb.lottie.compose.rememberLottieComposition
+import com.airbnb.lottie.compose.rememberLottieDynamicProperties
+import com.airbnb.lottie.compose.rememberLottieDynamicProperty
 import kotlinx.coroutines.launch
 import org.tpmobile.minghuiradio.R
 import org.tpmobile.minghuiradio.data.FavoriteItem
 import org.tpmobile.minghuiradio.data.UiState
 import org.tpmobile.minghuiradio.exoplayer.ui.MusicPlayer
 import org.tpmobile.minghuiradio.ui.viewmodel.MhrViewModel
+import org.tpmobile.minghuiradio.ui.widget.LottieMusicAnimation
 import org.tpmobile.minghuiradio.util.Logger
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -98,7 +105,7 @@ fun FavoriteScreen(
       super.onPlaybackStateChanged(playbackState)
       Logger.i(TAG, "onPlaybackStateChanged: $playbackState, ${currentMp3Url.value}")
       if(currentMp3Url.value.isEmpty()) return
-      if (playbackState == Player.STATE_ENDED) {
+      if (playbackState == Player.STATE_ENDED || playbackState == Player.STATE_IDLE) {
         viewModel.updateFavoriteItemPlayState(currentMp3Url.value, false)
       } else if (playbackState == Player.STATE_READY) {
         viewModel.updateFavoriteItemPlayState(currentMp3Url.value, true)
@@ -115,7 +122,7 @@ fun FavoriteScreen(
   mediaController.addListener(listener)
 
   LifecycleStartEffect(Unit) {
-    mediaController.addListener(listener)
+    //mediaController.addListener(listener)
     onStopOrDispose {
       Logger.i(TAG, "LifecycleStartEffect => onStopOrDispose...")
       mediaController.removeListener(listener)
@@ -126,6 +133,7 @@ fun FavoriteScreen(
     coroutineScope.launch {
       if (showExoplayer) {
         showExoplayer = false
+        currentMp3Url.value = ""
         viewModel.clearAllFavoriteItemPlayState()
         mediaController.stop()
         mediaController.setMediaItems(emptyList())
@@ -195,6 +203,7 @@ fun FavoriteScreen(
                 IconButton(onClick = {
                   if (showExoplayer) {
                     showExoplayer = false
+                    currentMp3Url.value = ""
                     viewModel.clearAllFavoriteItemPlayState()
                     mediaController.stop()
                     mediaController.setMediaItems(emptyList())
@@ -261,6 +270,7 @@ fun FavoriteScreen(
                     .padding(bottom = innerPadding.calculateBottomPadding()),
                   onClick = { itemSelected ->
                     Logger.i(TAG, "点击了：$itemSelected")
+                    viewModel.clearAllMusicItemPlayState()//20260713
                     currentMp3Url.value = favoriteItems[itemSelected].url
                     showExoplayer = true
                     //context.setPref(PREF_CURRENT_PLAYING, "$ROUTE_FAVORITE_PAGE|${favoriteItems[itemSelected].url}")
@@ -275,12 +285,14 @@ fun FavoriteScreen(
                     //1、检查当前播放状态，相同时停止播放等
                     if (favoriteItems[itemDeleted].isPlaying) {
                       showExoplayer = false
+                      currentMp3Url.value = ""
                       mediaController.stop()
                       mediaController.setMediaItems(emptyList())
                     }
                     //2.
                     viewModel.deleteFavoriteItem(favoriteItems[itemDeleted])
                     viewModel.updateMusicItemFavorite(favoriteItems[itemDeleted].url, false)
+                    viewModel.updateMusicItemPlayState(favoriteItems[itemDeleted].url, false)//20260713
                   }
                 )
               }
@@ -327,6 +339,14 @@ fun FavoriteScreen(
         TextButton(
           onClick = {
             showConfirmationDialog = false
+            //1.
+            if(showExoplayer){
+              showExoplayer = false
+              currentMp3Url.value = ""
+              mediaController.stop()
+              mediaController.setMediaItems(emptyList())
+            }
+            //2.
             viewModel.clearAllFavoriteItems()
           }
         ) { Text(stringResource(R.string.dialog_result_ok)) }
@@ -350,6 +370,14 @@ fun FavoriteList(
   viewModel: MhrViewModel,
   onDelete: (Int) -> Unit
 ) {
+  val composition by rememberLottieComposition(LottieCompositionSpec.RawRes(R.raw.audio_wave_animated))
+  val dynamicProperties =  rememberLottieDynamicProperties(
+    rememberLottieDynamicProperty(
+      property = LottieProperty.COLOR,
+      value = MaterialTheme.colorScheme.secondary.toArgb(),//Color.Red.toArgb(),
+      keyPath = arrayOf("**","Fill"),
+    ),
+  )
   LazyColumn(
     modifier = modifier,//.wrapContentHeight(),//Modifier.padding(top = paddingTop),
     contentPadding = PaddingValues(horizontal = 8.dp, vertical = 8.dp)
@@ -370,7 +398,7 @@ fun FavoriteList(
         horizontalArrangement = Arrangement.Center,
         verticalAlignment = Alignment.CenterVertically
       ) {
-        AnimatedVectorDrawable(item.isPlaying)
+        LottieMusicAnimation(index, item.isPlaying, composition, dynamicProperties)
         Column(Modifier.wrapContentHeight()) {
           Row(
             Modifier.fillMaxWidth(),
